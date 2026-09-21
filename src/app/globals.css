@@ -1,26 +1,187 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --bg-main: #08090a;
+    --bg-card: #0f1011;
+    --text-primary: #ffffff;
+    --text-muted: #8a8f98;
+    --brand-primary: #e4f222;
+    --brand-foreground: #08090a;
+    --border-color: #23252a;
+    --radius-base: 6px;
+    --shadow-base: 0 0 0 1px #23252a, 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+    --accent-glow: rgba(228, 242, 34, 0.25);
+    --badge-bg: rgba(228, 242, 34, 0.1);
+    --badge-text: #e4f222;
+  }
+
+  /* 1. Linear: Midnight Precision Instrument (from Refero) */
+  [data-theme="linear"] {
+    --bg-main: #08090a;
+    --bg-card: #0f1011;
+    --text-primary: #ffffff;
+    --text-muted: #8a8f98;
+    --brand-primary: #e4f222;
+    --brand-foreground: #08090a;
+    --border-color: #23252a;
+    --radius-base: 6px;
+    --shadow-base: 0 0 0 1px #23252a, 0 8px 24px -4px rgba(0, 0, 0, 0.6);
+    --accent-glow: rgba(228, 242, 34, 0.25);
+    --badge-bg: rgba(228, 242, 34, 0.1);
+    --badge-text: #e4f222;
+  }
+
+  /* 2. Linearity: Glowing Studio Console (from Refero) */
+  [data-theme="linearity"] {
+    --bg-main: #000000;
+    --bg-card: #111111;
+    --text-primary: #ffffff;
+    --text-muted: #999999;
+    --brand-primary: #ff4800;
+    --brand-foreground: #ffffff;
+    --border-color: #292929;
+    --radius-base: 9999px;
+    --shadow-base: 0 0 20px rgba(255, 72, 0, 0.22), 0 0 0 1px #292929;
+    --accent-glow: rgba(255, 72, 0, 0.35);
+    --badge-bg: rgba(255, 72, 0, 0.15);
+    --badge-text: #ff5e23;
+  }
+
+  /* 3. Dovetail: Blueprint Midnight Control Room (from Refero) */
+  [data-theme="dovetail"] {
+    --bg-main: #0a0a0a;
+    --bg-card: #141414;
+    --text-primary: #ffffff;
+    --text-muted: #a7a7a7;
+    --brand-primary: #6798ff;
+    --brand-foreground: #000000;
+    --border-color: #222222;
+    --radius-base: 8px;
+    --shadow-base: 0 0 0 1px #222222;
+    --accent-glow: rgba(103, 152, 255, 0.25);
+    --badge-bg: rgba(103, 152, 255, 0.12);
+    --badge-text: #6798ff;
+  }
+
+  /* 4. Dimension: Dusk-Lit Frosted Glass Workspace (from Refero) */
+  [data-theme="dimension"] {
+    --bg-main: #0a0a0a;
+    --bg-card: #151518;
+    --text-primary: #ededed;
+    --text-muted: #8e8e93;
+    --brand-primary: #ffffff;
+    --brand-foreground: #0a0a0a;
+    --border-color: rgba(255, 255, 255, 0.1);
+    --radius-base: 24px;
+    --shadow-base: 0 12px 36px -4px rgba(0, 0, 0, 0.5), 0 0 35px -5px rgba(107, 98, 242, 0.25);
+    --accent-glow: rgba(107, 98, 242, 0.35);
+    --badge-bg: rgba(107, 98, 242, 0.15);
+    --badge-text: #a594fd;
+  }
+
+  /* 5. Circle: Aurora Cosmic Indigo (from Refero) */
+  [data-theme="circle"] {
+    --bg-main: #0b0c26;
+    --bg-card: #14163d;
+    --text-primary: #ffffff;
+    --text-muted: #9fa4dd;
+    --brand-primary: #3655e5;
+    --brand-foreground: #ffffff;
+    --border-color: #2c2e63;
+    --radius-base: 14px;
+    --shadow-base: 0 8px 30px rgba(54, 85, 229, 0.25), 0 0 0 1px #2c2e63;
+    --accent-glow: rgba(62, 27, 201, 0.4);
+    --badge-bg: rgba(54, 85, 229, 0.15);
+    --badge-text: #818cf8;
+  }
+
+  /* 6. Stripe Clean: Scandinavian Modern Light (from Refero) */
+  [data-theme="stripe-clean"] {
+    --bg-main: #f8fafc;
+    --bg-card: #ffffff;
+    --text-primary: #0f172a;
+    --text-muted: #64748b;
+    --brand-primary: #2563eb;
+    --brand-foreground: #ffffff;
+    --border-color: #e2e8f0;
+    --radius-base: 12px;
+    --shadow-base: 0 4px 20px -2px rgba(0, 0, 0, 0.06), 0 1px 3px rgba(0, 0, 0, 0.04);
+    --accent-glow: rgba(37, 99, 235, 0.15);
+    --badge-bg: #eff6ff;
+    --badge-text: #2563eb;
+  }
+
+  /* 7. Supabase Eco: Pristine Bio-Sparkle Emerald (from Refero) */
+  [data-theme="emerald-clean"] {
+    --bg-main: #0b100e;
+    --bg-card: #121b17;
+    --text-primary: #f0fdf4;
+    --text-muted: #86efac;
+    --brand-primary: #10b981;
+    --brand-foreground: #022c19;
+    --border-color: #1c3026;
+    --radius-base: 10px;
+    --shadow-base: 0 0 25px rgba(16, 185, 129, 0.15), 0 0 0 1px #1c3026;
+    --accent-glow: rgba(16, 185, 129, 0.25);
+    --badge-bg: rgba(16, 185, 129, 0.12);
+    --badge-text: #34d399;
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+@theme {
+  --color-background: var(--bg-main);
+  --color-card: var(--bg-card);
+  --color-primary: var(--text-primary);
+  --color-muted: var(--text-muted);
+  --color-brand-primary: var(--brand-primary);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-border-color: var(--border-color);
+  --radius-theme: var(--radius-base);
+  --shadow-theme: var(--shadow-base);
+}
+
+/* Explicit CSS utility classes mapped to CSS variables for 100% reliable theming */
+.bg-canvas {
+  background-color: var(--bg-main);
+}
+.bg-card-theme {
+  background-color: var(--bg-card);
+}
+.text-theme-primary {
+  color: var(--text-primary);
+}
+.text-theme-muted {
+  color: var(--text-muted);
+}
+.bg-theme-brand {
+  background-color: var(--brand-primary);
+}
+.text-theme-brand-fg {
+  color: var(--brand-foreground);
+}
+.border-theme {
+  border-color: var(--border-color);
+}
+.rounded-theme {
+  border-radius: var(--radius-base);
+}
+.shadow-theme {
+  box-shadow: var(--shadow-base);
+}
+
+/* Custom scrollbars for clean UI */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(150, 150, 150, 0.25);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(150, 150, 150, 0.4);
 }
