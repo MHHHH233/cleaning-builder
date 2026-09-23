@@ -2,12 +2,14 @@ import { BuilderState } from "@/types/builder";
 
 export const DEFAULT_BUILDER_STATE: BuilderState = {
   theme: "linear",
+  animationStyle: "slide-up",
   global: {
     logoUrl: null,
     businessName: "PureSpark Facility & Home Care",
     navLinks: [
       { label: "Home", href: "#hero" },
       { label: "Services", href: "#services" },
+      { label: "Commercial", href: "/services" },
       { label: "Why Us", href: "#about" },
       { label: "Reviews", href: "#reviews" },
       { label: "FAQ", href: "#faq" },
@@ -239,10 +241,10 @@ export const DEFAULT_BUILDER_STATE: BuilderState = {
           order: 0,
           data: {
             badge: "Commercial Grade Solutions",
-            headline: "Enterprise Facility Sanitation",
+            headline: "Enterprise Facility Sanitation & Maintenance",
             subheadline:
-              "Custom janitorial contracts, post-event rapid turnaround, and cleanroom sanitization for mission-critical facilities.",
-            primaryCtaText: "Download Rate Sheet",
+              "Custom janitorial contracts, post-event rapid turnaround, and cleanroom sanitization for mission-critical corporate environments.",
+            primaryCtaText: "Book Walkthrough",
             primaryCtaLink: "#contact",
             secondaryCtaText: "Call Dispatch",
             secondaryCtaLink: "tel:8008427873",
@@ -257,10 +259,177 @@ export const DEFAULT_BUILDER_STATE: BuilderState = {
           },
         },
         {
+          id: "sec-srv-services",
+          type: "services",
+          isHidden: false,
+          order: 1,
+          data: {
+            badge: "Commercial Packages",
+            headline: "Engineered For Heavy Foot-Traffic & Compliance",
+            subheadline:
+              "Tailored corporate cleaning schedules that meet OSHA, CDC, and LEED workplace guidelines.",
+            servicesList: [
+              {
+                id: "srv-comm-1",
+                title: "Daily Corporate Office Janitorial",
+                description:
+                  "Comprehensive night shift or day porter upkeep for workstations, conference centers, kitchenettes, and executive suites.",
+                priceTag: "Custom Contract",
+                features: [
+                  "Day Porter or Nightly Service",
+                  "Restroom Hygiene Sanitization",
+                  "Consumable Restocking Included",
+                ],
+              },
+              {
+                id: "srv-comm-2",
+                title: "Industrial Floor Stripping & Waxing",
+                description:
+                  "High-gloss burnishing, epoxy floor deep machine scrubbing, and protective sealants for retail spaces and warehouses.",
+                priceTag: "From $0.35/sqft",
+                features: [
+                  "Diamond Pad Restoration",
+                  "Non-Slip Protective Coats",
+                  "Minimal Business Downtime",
+                ],
+              },
+              {
+                id: "srv-comm-3",
+                title: "Medical & Cleanroom Disinfection",
+                description:
+                  "EPA hospital-grade electrostatic spray decontamination preventing cross-infection in healthcare and bio-tech facilities.",
+                priceTag: "Certified Protocol",
+                features: [
+                  "99.999% Pathogen Neutralization",
+                  "OSHA Bloodborne Pathogen Trained",
+                  "Digital Verification Logs",
+                ],
+              },
+              {
+                id: "srv-comm-4",
+                title: "Post-Event & Convention Turnaround",
+                description:
+                  "Rapid-response crews for trade shows, banquet halls, and corporate summits with full waste removal and floor restoration.",
+                priceTag: "Rapid Response",
+                features: [
+                  "Sub-4-Hour Deployment",
+                  "Complete Trash & Debris Clear",
+                  "Restroom Restocking & Polish",
+                ],
+              },
+            ],
+          },
+        },
+        {
+          id: "sec-srv-about",
+          type: "about",
+          isHidden: false,
+          order: 2,
+          data: {
+            badge: "Enterprise Security & SLA",
+            headline: "Vetted Personnel. Absolute Discretion.",
+            subheadline:
+              "We understand the sensitivity of enterprise workspaces. Every cleaner is background checked, bonded, and bound by strict NDA agreements.",
+            imageUrl:
+              "https://images.unsplash.com/photo-1497366216548-37526070297c?auto=format&fit=crop&w=1000&q=80",
+            checkpoints: [
+              "$5,000,000 Commercial General Liability & Umbrella Insurance",
+              "FBI fingerprinting and criminal background verifications",
+              "Dedicated Account Executive & 24/7 Operations Command Line",
+              "100% Guaranteed 2-Hour Response SLA for emergency incidents",
+            ],
+            quote:
+              "“PureSpark manages our 85,000 sq ft headquarters across 4 floors. In 2 years, we have had zero compliance violations and impeccable hygiene audits.”",
+            founderTitle: "Robert Sterling, VP Workplace Experience",
+          },
+        },
+        {
+          id: "sec-srv-reviews",
+          type: "reviews",
+          isHidden: false,
+          order: 3,
+          data: {
+            badge: "Commercial Client Trust",
+            headline: "What Facility Managers Say About Us",
+            subheadline:
+              "Discover why leading property management firms and tech campuses partner with PureSpark.",
+            reviewsList: [
+              {
+                id: "rev-c1",
+                name: "Katherine Vance",
+                role: "Facilities Director, Nexus Biopharma",
+                avatar:
+                  "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=150&q=80",
+                rating: 5,
+                comment:
+                  "Their cleanroom protocols exceed our rigorous FDA audit requirements. The team is disciplined, polite, and exceptionally thorough.",
+              },
+              {
+                id: "rev-c2",
+                name: "Jason Ramirez",
+                role: "Senior Property Manager, Skyline Towers",
+                avatar:
+                  "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=150&q=80",
+                rating: 5,
+                comment:
+                  "Switching to PureSpark cut our tenant cleanliness complaints by 100%. Their day porters keep our lobby gleaming through rain or snow.",
+              },
+              {
+                id: "rev-c3",
+                name: "Amara Patel",
+                role: "Chief Operating Officer, Horizon Fintech",
+                avatar:
+                  "https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=150&q=80",
+                rating: 5,
+                comment:
+                  "Nightly cleaning without disrupting late-night engineering teams. The green botanical products ensure no strong morning odors.",
+              },
+            ],
+          },
+        },
+        {
+          id: "sec-srv-faq",
+          type: "faq",
+          isHidden: false,
+          order: 4,
+          data: {
+            badge: "Contract FAQ",
+            headline: "Commercial Janitorial Questions",
+            subheadline:
+              "Clear answers regarding insurance, security protocols, schedules, and custom corporate billing.",
+            faqList: [
+              {
+                id: "faq-c1",
+                question: "What security and access protocols do your cleaning teams follow?",
+                answer:
+                  "Our staff are badged, uniformed, and trained on digital keycard access, alarm arming/disarming, and perimeter security. We strictly adhere to your internal NDA and security clearances.",
+              },
+              {
+                id: "faq-c2",
+                question: "Can we schedule cleaning strictly after business hours?",
+                answer:
+                  "Yes. Over 85% of our commercial accounts are serviced between 6:00 PM and 5:00 AM, ensuring zero interruption to your employees and daily operations.",
+              },
+              {
+                id: "faq-c3",
+                question: "Do you supply industrial restroom paper products and hand soap?",
+                answer:
+                  "Yes, we offer complete consumable management (jumbo roll tissues, multifold towels, antimicrobial foaming soaps, trash liners) with automated monthly inventory refills.",
+              },
+              {
+                id: "faq-c4",
+                question: "What is your emergency SLA if there is a spill or facility flood?",
+                answer:
+                  "All commercial contract accounts have direct access to our 24/7 dispatch hotline with guaranteed 2-hour on-site rapid response crews.",
+              },
+            ],
+          },
+        },
+        {
           id: "sec-srv-contact",
           type: "contact",
           isHidden: false,
-          order: 1,
+          order: 5,
           data: {
             badge: "B2B Accounts",
             headline: "Request a Commercial Facility Walkthrough",

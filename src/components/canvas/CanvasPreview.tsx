@@ -11,6 +11,7 @@ interface CanvasPreviewProps {
   activePageId: string;
   activeSectionId: string | null;
   onSelectSection: (sectionId: string) => void;
+  onSelectPage?: (pageId: string) => void;
   viewportMode?: "desktop" | "tablet" | "mobile";
   isInteractive?: boolean;
 }
@@ -20,9 +21,14 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
   activePageId,
   activeSectionId,
   onSelectSection,
+  onSelectPage,
   viewportMode = "desktop",
   isInteractive = true,
 }) => {
+  const outerContainerRef = React.useRef<HTMLDivElement>(null);
+  const mobileScrollRef = React.useRef<HTMLDivElement>(null);
+  const tabletScrollRef = React.useRef<HTMLDivElement>(null);
+
   const activePage =
     state.pages.find((p) => p.id === activePageId) || state.pages[0];
 
@@ -30,8 +36,74 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
     (a, b) => a.order - b.order
   );
 
+  // Handle interactive clicks on Navbar links inside preview
+  const handleNavigate = (href: string) => {
+    const cleanTarget = href.replace(/^[/#]+/, "").toLowerCase();
+    
+    // Check if link matches a page slug or title
+    const targetPage = state.pages.find(
+      (p) =>
+        p.slug.toLowerCase() === cleanTarget ||
+        p.id.toLowerCase() === cleanTarget ||
+        p.title.toLowerCase() === cleanTarget
+    );
+
+    if (targetPage && onSelectPage) {
+      onSelectPage(targetPage.id);
+      return;
+    }
+
+    // Check if link is an anchor on the current page
+    if (href.startsWith("#")) {
+      const elementId = href.replace("#", "");
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.scrollIntoView({ behavior: "smooth" });
+        return;
+      }
+    }
+
+    // Check if section exists on another page
+    const pageWithSection = state.pages.find((p) =>
+      p.sections.some((s) => s.type === cleanTarget || s.id === cleanTarget)
+    );
+    if (pageWithSection && onSelectPage) {
+      onSelectPage(pageWithSection.id);
+    }
+  };
+
+  // Auto-scroll to top whenever switching pages or viewport modes
+  React.useEffect(() => {
+    if (outerContainerRef.current) {
+      outerContainerRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+    if (mobileScrollRef.current) {
+      mobileScrollRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+    if (tabletScrollRef.current) {
+      tabletScrollRef.current.scrollTo({ top: 0, behavior: "instant" });
+    }
+  }, [activePageId, viewportMode]);
+
+  // Forward mouse wheel anywhere on canvas to active device mockup in mobile/tablet mode
+  const handleOuterWheel = (e: React.WheelEvent) => {
+    if (viewportMode === "mobile" && mobileScrollRef.current) {
+      if (!mobileScrollRef.current.contains(e.target as Node)) {
+        mobileScrollRef.current.scrollTop += e.deltaY;
+      }
+    } else if (viewportMode === "tablet" && tabletScrollRef.current) {
+      if (!tabletScrollRef.current.contains(e.target as Node)) {
+        tabletScrollRef.current.scrollTop += e.deltaY;
+      }
+    }
+  };
+
   return (
-    <div className="flex-1 overflow-y-auto overflow-x-auto bg-zinc-950 p-2 sm:p-4 lg:p-6 flex flex-col items-center justify-start min-w-0">
+    <div
+      ref={outerContainerRef}
+      onWheel={handleOuterWheel}
+      className="flex-1 overflow-y-auto overflow-x-auto bg-zinc-950 p-2 sm:p-4 lg:p-6 flex flex-col items-center justify-start min-w-0 select-none sm:select-auto"
+    >
       {/* Mobile Device Mockup Frame */}
       {viewportMode === "mobile" && (
         <div className="w-[390px] max-w-[95vw] h-[min(820px,calc(100vh-100px))] my-auto rounded-[44px] border-[10px] border-zinc-800 bg-zinc-900 shadow-[0_25px_60px_-15px_rgba(0,0,0,0.8)] overflow-hidden flex flex-col shrink-0 ring-1 ring-zinc-700/50">
@@ -48,14 +120,16 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
           {/* Mobile Scrollable Viewport Content */}
           <div
+            ref={mobileScrollRef}
             data-theme={state.theme}
-            className="w-full flex-1 overflow-y-auto bg-canvas text-theme-primary transition-colors duration-300 relative flex flex-col select-text"
+            className="w-full flex-1 overflow-y-auto bg-canvas text-theme-primary transition-colors duration-300 relative flex flex-col select-text [scrollbar-width:thin] [scrollbar-color:rgba(161,161,170,0.5)_transparent]"
           >
             <ViewportProvider mode="mobile">
               <UniversalNavbar
                 businessName={state.global.businessName}
                 logoUrl={state.global.logoUrl}
                 navLinks={state.global.navLinks}
+                onNavigate={handleNavigate}
               />
 
               <main className="flex-1">
@@ -73,6 +147,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
                       isSelected={section.id === activeSectionId}
                       onSelect={onSelectSection}
                       isCanvasInteractive={isInteractive}
+                      animationStyle={state.animationStyle || "slide-up"}
                     />
                   ))
                 )}
@@ -103,14 +178,16 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
 
           {/* Tablet Scrollable Viewport Content */}
           <div
+            ref={tabletScrollRef}
             data-theme={state.theme}
-            className="w-full flex-1 overflow-y-auto bg-canvas text-theme-primary transition-colors duration-300 relative flex flex-col select-text"
+            className="w-full flex-1 overflow-y-auto bg-canvas text-theme-primary transition-colors duration-300 relative flex flex-col select-text [scrollbar-width:thin] [scrollbar-color:rgba(161,161,170,0.5)_transparent]"
           >
             <ViewportProvider mode="tablet">
               <UniversalNavbar
                 businessName={state.global.businessName}
                 logoUrl={state.global.logoUrl}
                 navLinks={state.global.navLinks}
+                onNavigate={handleNavigate}
               />
 
               <main className="flex-1">
@@ -128,6 +205,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
                       isSelected={section.id === activeSectionId}
                       onSelect={onSelectSection}
                       isCanvasInteractive={isInteractive}
+                      animationStyle={state.animationStyle || "slide-up"}
                     />
                   ))
                 )}
@@ -154,6 +232,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
               businessName={state.global.businessName}
               logoUrl={state.global.logoUrl}
               navLinks={state.global.navLinks}
+              onNavigate={handleNavigate}
             />
 
             <main className="flex-1">
@@ -174,6 +253,7 @@ export const CanvasPreview: React.FC<CanvasPreviewProps> = ({
                     isSelected={section.id === activeSectionId}
                     onSelect={onSelectSection}
                     isCanvasInteractive={isInteractive}
+                    animationStyle={state.animationStyle || "slide-up"}
                   />
                 ))
               )}

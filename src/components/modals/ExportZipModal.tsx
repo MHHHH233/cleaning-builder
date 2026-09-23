@@ -331,7 +331,227 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
 `;
       zip.file("src/app/layout.tsx", layoutTsxContent);
 
-      // 9. Authentic Deployment Guide PDF
+      // 9. src/app/page.tsx (Complete Next.js Production Website Page)
+      const pageTsxContent = `"use client";
+
+import React, { useState } from "react";
+import siteConfig from "../../site-config.json";
+import { Sparkles, Phone, Mail, MapPin, Clock, PhoneCall, Check, Send, CheckCircle2, Star, ShieldCheck, ChevronDown } from "lucide-react";
+
+export default function HomePage() {
+  const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [quoteSubmitted, setQuoteSubmitted] = useState(false);
+  const [lastWhatsAppUrl, setLastWhatsAppUrl] = useState("");
+  const [form, setForm] = useState({ name: "", phone: "", email: "", service: "residential", size: "2bed" });
+
+  const activePage = siteConfig.pages[0] || {};
+  const sections = (activePage.sections || []).filter((s: any) => !s.isHidden).sort((a: any, b: any) => a.order - b.order);
+
+  const phoneRaw = (sections.find((s: any) => s.type === "contact")?.data?.phoneNumber || "(800) 842-7873").replace(/[^0-9]/g, "");
+  const intlPhone = phoneRaw.length === 10 ? \`1\${phoneRaw}\` : phoneRaw || "18008427873";
+
+  const handleQuoteSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    const msg = \`👋 *New Cleaning Quote Inquiry*\\n\\n👤 *Name:* \${form.name}\\n📞 *Phone:* \${form.phone}\\n✉️ *Email:* \${form.email}\\n🧹 *Service:* \${form.service}\\n📐 *Scope:* \${form.size}\\n\\n_Sent via Website Quote Form_\`;
+    const waUrl = \`https://wa.me/\${intlPhone}?text=\${encodeURIComponent(msg)}\`;
+    setLastWhatsAppUrl(waUrl);
+    setQuoteSubmitted(true);
+    try { window.open(waUrl, "_blank", "noopener,noreferrer"); } catch {}
+  };
+
+  return (
+    <div data-theme={siteConfig.theme} className="min-h-screen bg-canvas text-theme-primary">
+      {/* Header / Navbar */}
+      <header className="sticky top-0 z-40 w-full border-b border-theme bg-canvas/90 backdrop-blur-md">
+        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-8">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center bg-theme-brand text-theme-brand-fg rounded-theme font-bold shadow-theme">
+              <Sparkles className="h-4 w-4" />
+            </div>
+            <span className="text-base font-bold tracking-tight text-theme-primary">{siteConfig.global.businessName}</span>
+          </div>
+          <nav className="hidden md:flex items-center gap-6">
+            {(siteConfig.global.navLinks || []).map((l: any, i: number) => (
+              <a key={i} href={l.href} className="text-sm font-medium text-theme-muted hover:text-theme-primary transition-colors">{l.label}</a>
+            ))}
+          </nav>
+          <a href="#contact" className="inline-flex items-center gap-2 px-4 py-2 text-xs sm:text-sm font-semibold bg-theme-brand text-theme-brand-fg rounded-theme shadow-theme hover:opacity-90 transition-all">
+            <PhoneCall className="h-3.5 w-3.5" />
+            <span>Instant Quote</span>
+          </a>
+        </div>
+      </header>
+
+      {/* Main Sections */}
+      <main>
+        {sections.map((sec: any) => {
+          if (sec.type === "hero") {
+            return (
+              <section key={sec.id} id="hero" className="relative py-16 sm:py-24 border-b border-theme overflow-hidden">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center max-w-3xl">
+                  {sec.data.badge && <div className="inline-flex items-center gap-2 px-3 py-1 text-xs font-semibold rounded-theme bg-card-theme border border-theme mb-4">{sec.data.badge}</div>}
+                  <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-theme-primary leading-tight">{sec.data.headline}</h1>
+                  <p className="mt-5 text-base sm:text-lg text-theme-muted leading-relaxed">{sec.data.subheadline}</p>
+                  <div className="mt-8 flex flex-wrap justify-center gap-3">
+                    <a href={sec.data.primaryCtaLink || "#contact"} className="px-6 py-3 font-bold text-sm bg-theme-brand text-theme-brand-fg rounded-theme shadow-theme hover:opacity-90">{sec.data.primaryCtaText || "Get Quote"}</a>
+                    {sec.data.secondaryCtaText && <a href={sec.data.secondaryCtaLink || "#services"} className="px-6 py-3 font-bold text-sm bg-card-theme border border-theme rounded-theme hover:bg-theme-muted/10">{sec.data.secondaryCtaText}</a>}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          if (sec.type === "services") {
+            return (
+              <section key={sec.id} id="services" className="py-16 sm:py-24 border-b border-theme">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="text-center max-w-2xl mx-auto mb-12">
+                    <div className="text-xs font-bold text-theme-muted uppercase tracking-wider">{sec.data.badge}</div>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold mt-2">{sec.data.headline}</h2>
+                    <p className="mt-3 text-theme-muted text-sm sm:text-base">{sec.data.subheadline}</p>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                    {(sec.data.servicesList || []).map((srv: any) => (
+                      <div key={srv.id} className="border border-theme bg-card-theme p-6 rounded-theme shadow-theme flex flex-col justify-between">
+                        <div>
+                          <div className="text-xs font-mono font-bold text-theme-muted">{srv.priceTag}</div>
+                          <h3 className="text-lg font-bold mt-2">{srv.title}</h3>
+                          <p className="text-xs text-theme-muted mt-2 leading-relaxed">{srv.description}</p>
+                        </div>
+                        <ul className="mt-4 pt-4 border-t border-theme/60 space-y-1.5 text-xs text-theme-muted">
+                          {(srv.features || []).map((f: string, idx: number) => (
+                            <li key={idx} className="flex items-center gap-1.5"><Check className="h-3 w-3 shrink-0" /><span>{f}</span></li>
+                          ))}
+                        </ul>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          if (sec.type === "about") {
+            return (
+              <section key={sec.id} id="about" className="py-16 sm:py-24 border-b border-theme">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 max-w-4xl text-center">
+                  <div className="text-xs font-bold text-theme-muted uppercase tracking-wider">{sec.data.badge}</div>
+                  <h2 className="text-3xl sm:text-4xl font-extrabold mt-2">{sec.data.headline}</h2>
+                  <p className="mt-4 text-theme-muted text-sm sm:text-base leading-relaxed">{sec.data.subheadline}</p>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-8 text-left max-w-2xl mx-auto">
+                    {(sec.data.checkpoints || []).map((c: string, idx: number) => (
+                      <div key={idx} className="flex items-start gap-2 p-3 rounded-theme bg-card-theme border border-theme text-xs font-medium">
+                        <Check className="h-4 w-4 shrink-0 text-theme-brand" />
+                        <span>{c}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          if (sec.type === "reviews") {
+            return (
+              <section key={sec.id} id="reviews" className="py-16 sm:py-24 border-b border-theme">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="text-center max-w-2xl mx-auto mb-12">
+                    <div className="text-xs font-bold text-theme-muted uppercase tracking-wider">{sec.data.badge}</div>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold mt-2">{sec.data.headline}</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    {(sec.data.reviewsList || []).map((r: any) => (
+                      <div key={r.id} className="p-6 rounded-theme bg-card-theme border border-theme shadow-theme flex flex-col justify-between">
+                        <p className="text-xs text-theme-muted italic leading-relaxed">“{r.comment}”</p>
+                        <div className="mt-4 pt-4 border-t border-theme/60 flex items-center gap-3">
+                          <img src={r.avatar} alt={r.name} className="h-9 w-9 rounded-full object-cover" />
+                          <div>
+                            <div className="text-xs font-bold">{r.name}</div>
+                            <div className="text-[10px] text-theme-muted">{r.role}</div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          if (sec.type === "faq") {
+            return (
+              <section key={sec.id} id="faq" className="py-16 sm:py-24 border-b border-theme">
+                <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+                  <div className="text-center mb-10">
+                    <h2 className="text-3xl font-extrabold">{sec.data.headline}</h2>
+                    <p className="text-xs text-theme-muted mt-2">{sec.data.subheadline}</p>
+                  </div>
+                  <div className="space-y-3">
+                    {(sec.data.faqList || []).map((f: any, idx: number) => (
+                      <div key={f.id || idx} className="rounded-theme border border-theme bg-card-theme p-4 cursor-pointer" onClick={() => setOpenFaq(openFaq === idx ? null : idx)}>
+                        <div className="flex justify-between items-center text-xs font-bold">{f.question}<ChevronDown className={\`h-4 w-4 transition-transform \${openFaq === idx ? "rotate-180" : ""}\`} /></div>
+                        {openFaq === idx && <p className="text-xs text-theme-muted mt-2 leading-relaxed pt-2 border-t border-theme/40">{f.answer}</p>}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          if (sec.type === "contact") {
+            return (
+              <section key={sec.id} id="contact" className="py-16 sm:py-24">
+                <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                  <div className="text-center max-w-2xl mx-auto mb-12">
+                    <div className="text-xs font-bold text-theme-muted uppercase tracking-wider">{sec.data.badge}</div>
+                    <h2 className="text-3xl sm:text-4xl font-extrabold mt-2">{sec.data.headline}</h2>
+                  </div>
+                  <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+                    <div className="lg:col-span-5 p-6 rounded-theme bg-card-theme border border-theme shadow-theme space-y-4">
+                      <h3 className="text-lg font-bold">Direct Contact</h3>
+                      <div className="space-y-2 text-xs">
+                        <div className="flex items-center gap-2"><Phone className="h-4 w-4" /><a href={\`tel:\${phoneRaw}\`} className="font-bold hover:underline">{sec.data.phoneNumber}</a></div>
+                        <div className="flex items-center gap-2 text-emerald-400 font-bold"><span className="text-sm">💬</span><a href={\`https://wa.me/\${intlPhone}?text=Hello!\`} target="_blank" className="hover:underline">Chat on WhatsApp ↗</a></div>
+                        <div className="flex items-center gap-2"><Mail className="h-4 w-4" /><span>{sec.data.emailAddress}</span></div>
+                        <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /><span>{sec.data.serviceArea}</span></div>
+                        <div className="flex items-center gap-2"><Clock className="h-4 w-4" /><span>{sec.data.businessHours}</span></div>
+                      </div>
+                    </div>
+                    <div className="lg:col-span-7 p-6 rounded-theme bg-card-theme border border-theme shadow-theme">
+                      {quoteSubmitted ? (
+                        <div className="text-center py-8 space-y-3">
+                          <CheckCircle2 className="h-10 w-10 text-emerald-500 mx-auto" />
+                          <h4 className="text-xl font-bold">Quote Sent via WhatsApp!</h4>
+                          <p className="text-xs text-theme-muted">We opened your WhatsApp with the inquiry details. Our team responds in under 15 minutes.</p>
+                          {lastWhatsAppUrl && <a href={lastWhatsAppUrl} target="_blank" className="inline-block px-5 py-2.5 rounded-theme bg-emerald-500 text-white font-bold text-xs mt-2">💬 Continue on WhatsApp</a>}
+                        </div>
+                      ) : (
+                        <form onSubmit={handleQuoteSubmit} className="space-y-3">
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                            <input type="text" required placeholder="Your Name" value={form.name} onChange={e => setForm({...form, name: e.target.value})} className="px-3 py-2 bg-canvas border border-theme rounded-theme text-xs" />
+                            <input type="tel" required placeholder="Phone Number" value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} className="px-3 py-2 bg-canvas border border-theme rounded-theme text-xs" />
+                          </div>
+                          <input type="email" required placeholder="Email Address" value={form.email} onChange={e => setForm({...form, email: e.target.value})} className="w-full px-3 py-2 bg-canvas border border-theme rounded-theme text-xs" />
+                          <button type="submit" className="w-full py-2.5 font-bold text-xs bg-theme-brand text-theme-brand-fg rounded-theme shadow-theme hover:opacity-90">{sec.data.submitButtonText || "Send Quote Request"}</button>
+                        </form>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </section>
+            );
+          }
+          return null;
+        })}
+      </main>
+
+      {/* Footer */}
+      <footer className="border-t border-theme py-8 text-center text-xs text-theme-muted bg-canvas">
+        <p>© {new Date().getFullYear()} {siteConfig.global.businessName}. All rights reserved.</p>
+      </footer>
+    </div>
+  );
+}
+`;
+      zip.file("src/app/page.tsx", pageTsxContent);
+
+      // 10. Authentic Deployment Guide PDF (Root & public/)
       const fallbackPdf = `%PDF-1.4\n1 0 obj\n<< /Type /Catalog /Pages 2 0 R >>\nendobj\n2 0 obj\n<< /Type /Pages /Kids [3 0 R] /Count 1 >>\nendobj\n3 0 obj\n<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 792] /Contents 4 0 R >>\nendobj\n4 0 obj\n<< /Length 44 >>\nstream\nBT /F1 18 Tf 50 700 Td (Cleaning Business Deployment Guide) Tj ET\nendstream\nendobj\nxref\n0 5\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\n0000000214 00000 n\ntrailer\n<< /Size 5 /Root 1 0 R >>\nstartxref\n308\n%%EOF`;
 
       try {
@@ -339,6 +559,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         if (pdfResponse.ok) {
           const pdfBlob = await pdfResponse.blob();
           zip.file("cleaning_business_deployment_guide.pdf", pdfBlob);
+          zip.file("public/cleaning_business_deployment_guide.pdf", pdfBlob);
         } else {
           zip.file("cleaning_business_deployment_guide.pdf", fallbackPdf);
         }
@@ -346,7 +567,28 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         zip.file("cleaning_business_deployment_guide.pdf", fallbackPdf);
       }
 
-      // 10. Standalone HTML single-file demo preview
+      // 11. README.md & DEPLOYMENT_GUIDE.md
+      const readmeMd = `# ${state.global.businessName} - Launch Kit
+
+Congratulations! This package contains your complete, production-ready cleaning business website.
+
+## 🚀 3-Minute Quick Launch
+1. **Unzip** this project to a folder.
+2. Run \`npm install\` to install dependencies.
+3. Run \`npm run dev\` to test locally at \`http://localhost:3000\`.
+4. Deploy to **Vercel** or **Netlify** with 1 click!
+
+## 📄 Visual Deployment PDF Guide
+A comprehensive visual guide is included:
+- \`cleaning_business_deployment_guide.pdf\` (Step-by-step PDF manual)
+
+## 💬 WhatsApp Integration
+The quote form automatically dispatches inquiries directly to your WhatsApp number for immediate response.
+`;
+      zip.file("README.md", readmeMd);
+      zip.file("DEPLOYMENT_GUIDE.md", readmeMd);
+
+      // 12. Standalone HTML single-file demo preview
       const activePage = state.pages[0];
       const htmlDemo = `<!DOCTYPE html>
 <html lang="en">
@@ -393,7 +635,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       // Generate and trigger download
       const blob = await zip.generateAsync({ type: "blob" });
       saveAs(blob, `${state.global.businessName.toLowerCase().replace(/[^a-z0-9]/g, "-")}-launch-kit.zip`);
-      if (onToast) onToast("📦 Downloaded complete Next.js site bundle with deployment guide!");
+      if (onToast) onToast("📦 Downloaded complete Next.js site bundle with cleaning_business_deployment_guide.pdf!");
     } catch (err) {
       console.error("ZIP packaging error:", err);
     } finally {
@@ -461,7 +703,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <div className="flex gap-2">
                 <input
                   type="text"
-                  placeholder="e.g. CLN-123 or WHOP-XXXX-XXXX"
+                  placeholder="Enter your Whop license key (e.g. WHOP-XXXX-XXXX)"
                   value={licenseKey}
                   onChange={(e) => setLicenseKey(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleVerifyLicense()}
@@ -479,20 +721,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
                     <Unlock className="h-3.5 w-3.5" />
                   )}
                   <span>{isVerifying ? "Verifying..." : "Verify Key"}</span>
-                </button>
-              </div>
-
-              {/* Dev Demo Keys Shortcut */}
-              <div className="flex items-center justify-between pt-1">
-                <button
-                  type="button"
-                  onClick={() => {
-                    setLicenseKey("CLN-123");
-                    handleVerifyLicense("CLN-123");
-                  }}
-                  className="text-[11px] text-amber-400/80 hover:text-amber-300 underline font-mono"
-                >
-                  Click to use Whop Demo Key (CLN-123)
                 </button>
               </div>
             </div>
@@ -534,14 +762,18 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <li><strong className="text-zinc-200">Complete Website Files</strong> — Pre-built and ready to publish immediately</li>
             <li><strong className="text-zinc-200">All Custom Content &amp; Photos</strong> — Bundled and optimized for fast loading</li>
             <li>
-              <strong className="text-zinc-200">3-Minute Setup PDF Guide</strong> — Simple step-by-step instructions to get online{" "}
+              <strong className="text-zinc-200">3-Minute Setup PDF Guide</strong> (
+              <code className="text-amber-400 font-mono text-[11px] bg-zinc-800 px-1.5 py-0.5 rounded">
+                cleaning_business_deployment_guide.pdf
+              </code>
+              ) — Included directly inside your ZIP root &amp; public folders{" "}
               <a
                 href="/cleaning_business_deployment_guide.pdf"
                 target="_blank"
                 rel="noreferrer"
                 className="text-amber-400 hover:underline font-semibold ml-1 inline-flex items-center gap-0.5"
               >
-                <span>(View PDF ↗)</span>
+                <span>(Preview PDF ↗)</span>
               </a>
             </li>
             <li><strong className="text-zinc-200">Chosen Theme:</strong> <span className="text-amber-400 font-bold capitalize">{state.theme.replace("-", " ")}</span></li>

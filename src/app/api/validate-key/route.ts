@@ -38,7 +38,8 @@ export async function POST(req: NextRequest) {
 
     const cleanKey = licenseKey.trim().toUpperCase();
     const whopApiKey = process.env.WHOP_API_KEY;
-    const isMasterDemoKey = cleanKey === "CLN-123" || cleanKey === "WHOP-CLEAN-PRO-2026";
+    // Removed free demo key CLN-123 for production license security
+    const isMasterDemoKey = cleanKey === "WHOP-CLEAN-PRO-2026";
 
     // 1. Check Upstash Redis to ensure key hasn't been redeemed already
     if (redis && !isMasterDemoKey) {

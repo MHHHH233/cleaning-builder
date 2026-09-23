@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { BuilderState, Page, Section, SectionType, REFERO_THEMES } from "@/types/builder";
+import { BuilderState, Page, Section, SectionType, REFERO_THEMES, AnimationStyle } from "@/types/builder";
 import { DEFAULT_BUILDER_STATE } from "@/lib/default-state";
 import {
   saveSiteStateToIndexedDB,
@@ -64,12 +64,21 @@ export const BuilderLayout: React.FC = () => {
       try {
         const idbState = await loadSiteStateFromIndexedDB();
         if (idbState && idbState.theme && idbState.pages && idbState.pages.length > 0) {
-          setState(idbState);
-          setHistory([idbState]);
+          // Auto-upgrade legacy page-services if it only had 2 sections
+          const upgradedPages = idbState.pages.map((p) => {
+            if (p.id === "page-services" && p.sections.length <= 2) {
+              const defaultServicesPage = DEFAULT_BUILDER_STATE.pages.find((dp) => dp.id === "page-services");
+              if (defaultServicesPage) return defaultServicesPage;
+            }
+            return p;
+          });
+          const upgradedState = { ...idbState, pages: upgradedPages };
+          setState(upgradedState);
+          setHistory([upgradedState]);
           setHistoryIndex(0);
-          setActivePageId(idbState.pages[0].id);
-          if (idbState.pages[0]?.sections[0]?.id) {
-            setActiveSectionId(idbState.pages[0].sections[0].id);
+          setActivePageId(upgradedState.pages[0].id);
+          if (upgradedState.pages[0]?.sections[0]?.id) {
+            setActiveSectionId(upgradedState.pages[0].sections[0].id);
           }
           return;
         }
@@ -78,12 +87,20 @@ export const BuilderLayout: React.FC = () => {
         if (saved) {
           const parsed = JSON.parse(saved);
           if (parsed && parsed.theme && parsed.pages) {
-            setState(parsed);
-            setHistory([parsed]);
+            const upgradedPages = parsed.pages.map((p: any) => {
+              if (p.id === "page-services" && p.sections.length <= 2) {
+                const defaultServicesPage = DEFAULT_BUILDER_STATE.pages.find((dp) => dp.id === "page-services");
+                if (defaultServicesPage) return defaultServicesPage;
+              }
+              return p;
+            });
+            const upgradedState = { ...parsed, pages: upgradedPages };
+            setState(upgradedState);
+            setHistory([upgradedState]);
             setHistoryIndex(0);
-            if (parsed.pages[0]?.id) setActivePageId(parsed.pages[0].id);
-            if (parsed.pages[0]?.sections[0]?.id) {
-              setActiveSectionId(parsed.pages[0].sections[0].id);
+            if (upgradedState.pages[0]?.id) setActivePageId(upgradedState.pages[0].id);
+            if (upgradedState.pages[0]?.sections[0]?.id) {
+              setActiveSectionId(upgradedState.pages[0].sections[0].id);
             }
           }
         }
@@ -146,6 +163,13 @@ export const BuilderLayout: React.FC = () => {
     updateStateWithHistory({
       ...state,
       theme: newTheme,
+    });
+  };
+
+  const handleAnimationStyleChange = (newStyle: AnimationStyle) => {
+    updateStateWithHistory({
+      ...state,
+      animationStyle: newStyle,
     });
   };
 
@@ -587,6 +611,7 @@ export const BuilderLayout: React.FC = () => {
             activePageId={activePageId}
             activeSectionId={activeSectionId}
             onThemeChange={handleThemeChange}
+            onAnimationStyleChange={handleAnimationStyleChange}
             onBusinessNameChange={handleBusinessNameChange}
             onLogoUrlChange={handleLogoUrlChange}
             onNavLinksChange={handleNavLinksChange}
@@ -610,6 +635,7 @@ export const BuilderLayout: React.FC = () => {
           activePageId={activePageId}
           activeSectionId={activeSectionId}
           onSelectSection={handleSelectSection}
+          onSelectPage={handleSelectPage}
           viewportMode={viewportMode}
           isInteractive={true}
         />

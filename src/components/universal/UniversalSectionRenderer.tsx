@@ -12,6 +12,7 @@ interface UniversalSectionRendererProps {
   isSelected?: boolean;
   onSelect?: (id: string) => void;
   isCanvasInteractive?: boolean;
+  animationStyle?: string;
 }
 
 export const UniversalSectionRenderer: React.FC<UniversalSectionRendererProps> = ({
@@ -19,10 +20,24 @@ export const UniversalSectionRenderer: React.FC<UniversalSectionRendererProps> =
   isSelected = false,
   onSelect,
   isCanvasInteractive = true,
+  animationStyle = "slide-up",
 }) => {
   if (section.isHidden) {
     return null;
   }
+
+  const animClass =
+    animationStyle === "fade"
+      ? "anim-fade"
+      : animationStyle === "scale"
+      ? "anim-scale"
+      : animationStyle === "spring"
+      ? "anim-spring"
+      : animationStyle === "subtle"
+      ? "anim-subtle"
+      : animationStyle === "none"
+      ? "anim-none"
+      : "anim-slide-up";
 
   const renderContent = () => {
     switch (section.type) {
@@ -50,7 +65,7 @@ export const UniversalSectionRenderer: React.FC<UniversalSectionRendererProps> =
   return (
     <div
       onClick={() => isCanvasInteractive && onSelect && onSelect(section.id)}
-      className={`relative transition-all duration-150 ${
+      className={`relative transition-all duration-150 ${animClass} ${
         isCanvasInteractive ? "cursor-pointer group hover:ring-2 hover:ring-theme-primary/30" : ""
       } ${isSelected ? "ring-2 ring-theme-primary ring-offset-2 ring-offset-black" : ""}`}
     >

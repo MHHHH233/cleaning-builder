@@ -57,10 +57,78 @@ export const PageManager: React.FC<PageManagerProps> = ({
           },
         },
         {
+          id: `sec-services-${Date.now()}`,
+          type: "services",
+          isHidden: false,
+          order: 1,
+          data: {
+            badge: "Service Highlights",
+            headline: `Complete ${newTitle.trim()} Packages`,
+            subheadline: "Tailored to your schedule and property specifications.",
+            servicesList: [
+              {
+                id: `srv-${Date.now()}-1`,
+                title: "Standard Service Protocol",
+                description: "Thorough deep scrubbing, sanitization, and dust extraction.",
+                priceTag: "Competitive Rate",
+                features: ["Certified Equipment", "Eco-Friendly Solutions", "Checklist Inspection"],
+              },
+              {
+                id: `srv-${Date.now()}-2`,
+                title: "Premium Extended Package",
+                description: "Comprehensive detailing including windows, vents, and high-touch areas.",
+                priceTag: "Top Tier",
+                features: ["Priority Dispatch", "Specialist Crew", "Satisfaction Guarantee"],
+              },
+            ],
+          },
+        },
+        {
+          id: `sec-about-${Date.now()}`,
+          type: "about",
+          isHidden: false,
+          order: 2,
+          data: {
+            badge: "Why Choose Us",
+            headline: "Proven Hygiene & Flawless Execution",
+            subheadline: "We bring modern methods and certified crews to every single assignment.",
+            checkpoints: [
+              "Vetted and background-checked cleaning specialists",
+              "Hospital-grade non-toxic disinfectants",
+              "100% Satisfaction Re-Clean Guarantee",
+            ],
+            quote: "“Excellence is not an act, but a standard we uphold in every property.”",
+            founderTitle: "Operations Team",
+          },
+        },
+        {
+          id: `sec-faq-${Date.now()}`,
+          type: "faq",
+          isHidden: false,
+          order: 3,
+          data: {
+            badge: "Common Questions",
+            headline: "Everything You Need to Know",
+            subheadline: "Answers to frequently asked questions about this service.",
+            faqList: [
+              {
+                id: `faq-${Date.now()}-1`,
+                question: "How quickly can you schedule service?",
+                answer: "We offer next-day and emergency same-day appointments depending on availability.",
+              },
+              {
+                id: `faq-${Date.now()}-2`,
+                question: "Are supplies and equipment provided?",
+                answer: "Yes, our team brings all professional HEPA equipment and eco-safe supplies.",
+              },
+            ],
+          },
+        },
+        {
           id: `sec-contact-${Date.now()}`,
           type: "contact",
           isHidden: false,
-          order: 1,
+          order: 4,
           data: {
             badge: "Direct Contact",
             headline: "Schedule Service Today",

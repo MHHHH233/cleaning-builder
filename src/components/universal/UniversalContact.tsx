@@ -43,21 +43,53 @@ export const UniversalContact: React.FC<UniversalContactProps> = ({ data }) => {
   });
 
   const [submitted, setSubmitted] = useState(false);
+  const [lastWhatsAppUrl, setLastWhatsAppUrl] = useState<string>("");
+
+  const serviceLabels: Record<string, string> = {
+    residential: "Deep Residential Cleaning",
+    commercial: "Commercial Office Care",
+    move: "Move-In / Move-Out Deep Clean",
+    post: "Post-Construction Detailing",
+  };
+
+  const sizeLabels: Record<string, string> = {
+    "1bed": "1 Bedroom / 1 Bath",
+    "2bed": "2-3 Bedrooms / 2 Baths",
+    "4bed": "4+ Bedrooms / 3+ Baths",
+    "commercial-small": "Small Office (Under 2,500 sq ft)",
+    "commercial-large": "Large Facility (2,500+ sq ft)",
+  };
+
+  const getWhatsAppUrl = () => {
+    const rawDigits = phoneNumber.replace(/[^0-9]/g, "");
+    // Default to international format if starts without country code (US 1 default if 10 digits)
+    const intlPhone = rawDigits.length === 10 ? `1${rawDigits}` : rawDigits || "18008427873";
+    const serviceName = serviceLabels[formData.serviceType] || formData.serviceType;
+    const scopeName = sizeLabels[formData.size] || formData.size;
+
+    const message = `👋 *New Cleaning Quote Inquiry*\n\n` +
+      `👤 *Name:* ${formData.name || "N/A"}\n` +
+      `📞 *Phone:* ${formData.phone || "N/A"}\n` +
+      `✉️ *Email:* ${formData.email || "N/A"}\n` +
+      `🧹 *Service:* ${serviceName}\n` +
+      `📐 *Scope:* ${scopeName}\n` +
+      `\n_Sent via Website Quote Form_`;
+
+    return `https://wa.me/${intlPhone}?text=${encodeURIComponent(message)}`;
+  };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    const waUrl = getWhatsAppUrl();
+    setLastWhatsAppUrl(waUrl);
     setSubmitted(true);
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({
-        name: "",
-        email: "",
-        phone: "",
-        serviceType: "residential",
-        size: "2bed",
-        date: "",
-      });
-    }, 4000);
+
+    // Best practice: redirect / open WhatsApp chat with pre-filled message
+    try {
+      window.open(waUrl, "_blank", "noopener,noreferrer");
+    } catch {
+      // fallback in case popup blocked
+    }
   };
 
   return (
@@ -105,6 +137,23 @@ export const UniversalContact: React.FC<UniversalContactProps> = ({ data }) => {
               </div>
 
               <div className="flex items-start gap-3">
+                <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-theme bg-canvas border border-theme text-emerald-400">
+                  <span className="text-sm">💬</span>
+                </div>
+                <div className="min-w-0">
+                  <div className="text-[10px] sm:text-xs text-theme-muted uppercase tracking-wider font-semibold">WhatsApp Dispatch</div>
+                  <a
+                    href={`https://wa.me/${(phoneNumber.replace(/[^0-9]/g, "").length === 10 ? `1${phoneNumber.replace(/[^0-9]/g, "")}` : phoneNumber.replace(/[^0-9]/g, "")) || "18008427873"}?text=${encodeURIComponent("Hello PureSpark! 🧹 I would like to inquire about your cleaning services.")}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs sm:text-sm font-bold text-emerald-400 hover:underline truncate block"
+                  >
+                    Chat on WhatsApp ↗
+                  </a>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-3">
                 <div className="flex h-8 w-8 sm:h-9 sm:w-9 shrink-0 items-center justify-center rounded-theme bg-canvas border border-theme text-theme-primary">
                   <Mail className="h-4 w-4" />
                 </div>
@@ -145,14 +194,34 @@ export const UniversalContact: React.FC<UniversalContactProps> = ({ data }) => {
           {/* Interactive Quote Form */}
           <div className={`${isMobile || isTablet ? "w-full" : "lg:col-span-7"} border border-theme bg-card-theme ${isMobile ? "p-4 sm:p-6" : "p-6 sm:p-8"} rounded-theme shadow-theme`}>
             {submitted ? (
-              <div className="flex flex-col items-center justify-center py-10 text-center space-y-4">
-                <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-theme-brand text-theme-brand-fg">
+              <div className="flex flex-col items-center justify-center py-10 text-center space-y-4 animate-in fade-in zoom-in-95 duration-200">
+                <div className="flex h-12 w-12 sm:h-14 sm:w-14 items-center justify-center rounded-full bg-emerald-500 text-zinc-950 shadow-lg">
                   <CheckCircle2 className="h-6 w-6 sm:h-8 sm:w-8" />
                 </div>
-                <h4 className="text-xl sm:text-2xl font-bold text-theme-primary">Quote Request Received!</h4>
-                <p className="max-w-md text-xs sm:text-sm text-theme-muted">
-                  Thank you! Our dispatch supervisor is reviewing your property specifications and will text/call your estimate within 15 minutes.
+                <h4 className="text-xl sm:text-2xl font-bold text-theme-primary">Quote Request Sent via WhatsApp!</h4>
+                <p className="max-w-md text-xs sm:text-sm text-theme-muted leading-relaxed">
+                  We opened your WhatsApp with the pre-filled quote details. Our dispatch supervisor is ready to confirm your booking and reply instantly.
                 </p>
+
+                {lastWhatsAppUrl && (
+                  <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
+                    <a
+                      href={lastWhatsAppUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-2 px-5 py-2.5 rounded-theme bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs sm:text-sm shadow-md transition-all active:scale-95"
+                    >
+                      <span>💬 Continue on WhatsApp</span>
+                    </a>
+                    <button
+                      type="button"
+                      onClick={() => setSubmitted(false)}
+                      className="text-xs text-theme-muted hover:text-theme-primary underline py-1"
+                    >
+                      Submit Another Request
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
               <form onSubmit={handleSubmit} className="space-y-4">

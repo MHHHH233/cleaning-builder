@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Section, SectionType } from "@/types/builder";
+import { Page, Section, SectionType } from "@/types/builder";
 import {
   Plus,
   Eye,
@@ -11,9 +11,9 @@ import {
   Sparkles,
   Layers,
 } from "lucide-react";
-import { generateAICopy, generateRandomService } from "@/lib/ai-generator";
 
 interface SectionManagerProps {
+  activePage?: Page;
   sections: Section[];
   activeSectionId: string | null;
   onSelectSection: (sectionId: string) => void;
@@ -24,6 +24,7 @@ interface SectionManagerProps {
 }
 
 export const SectionManager: React.FC<SectionManagerProps> = ({
+  activePage,
   sections,
   activeSectionId,
   onSelectSection,
@@ -60,15 +61,35 @@ export const SectionManager: React.FC<SectionManagerProps> = ({
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
+      {/* Current Page Context Header */}
+      <div className="rounded-lg border border-zinc-700/80 bg-zinc-900/90 p-3 space-y-1.5 shadow-sm">
+        <div className="flex items-center justify-between">
+          <div className="min-w-0">
+            <div className="text-[10px] font-mono font-bold uppercase tracking-wider text-amber-400">
+              Active Page
+            </div>
+            <div className="text-xs font-bold text-zinc-100 truncate">
+              {activePage?.title || "Page"} <span className="text-zinc-500 font-mono font-normal">/{activePage?.slug || "home"}</span>
+            </div>
+          </div>
+          <span className="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-zinc-800 text-zinc-300 border border-zinc-700">
+            {sections.length} sections
+          </span>
+        </div>
+        <p className="text-[11px] text-zinc-400 leading-snug">
+          Sections below belong to <strong className="text-zinc-200">{activePage?.title}</strong>. Click any section to edit or add new blocks.
+        </p>
+      </div>
+
+      <div className="flex items-center justify-between pt-1">
         <label className="text-xs font-bold uppercase tracking-wider text-zinc-400">
-          Sections ({sections.length})
+          Page Sections ({sections.length})
         </label>
         <div className="relative">
           <button
             type="button"
             onClick={() => setShowAddMenu(!showAddMenu)}
-            className="inline-flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition-colors"
+            className="inline-flex items-center gap-1 rounded border border-zinc-700 bg-zinc-800 px-2.5 py-1 text-xs font-medium text-zinc-200 hover:bg-zinc-700 transition-colors shadow-sm"
           >
             <Plus className="h-3.5 w-3.5" />
             <span>Add Section</span>

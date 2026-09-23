@@ -21,8 +21,33 @@ export interface Page {
   sections: Section[];
 }
 
+export type AnimationStyle =
+  | 'fade'
+  | 'slide-up'
+  | 'scale'
+  | 'spring'
+  | 'subtle'
+  | 'none';
+
+export interface AnimationDefinition {
+  id: AnimationStyle;
+  name: string;
+  description: string;
+  icon: string;
+}
+
+export const ANIMATION_STYLES: AnimationDefinition[] = [
+  { id: 'fade', name: 'Smooth Fade', description: 'Gentle opacity entrance', icon: '✨' },
+  { id: 'slide-up', name: 'Slide & Rise', description: 'Upward motion with depth', icon: '🚀' },
+  { id: 'scale', name: 'Zoom In', description: 'Modern scale-up expansion', icon: '🔍' },
+  { id: 'spring', name: 'Snappy Spring', description: 'Playful bouncy response', icon: '⚡' },
+  { id: 'subtle', name: 'Subtle Flow', description: 'Minimalist micro-transitions', icon: '🍃' },
+  { id: 'none', name: 'Static / None', description: 'Instant, no motion effects', icon: '🛑' },
+];
+
 export interface BuilderState {
   theme: string; // matches the data-theme string
+  animationStyle?: AnimationStyle;
   global: {
     logoUrl: string | null;
     businessName: string;

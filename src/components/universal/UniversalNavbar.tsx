@@ -9,6 +9,7 @@ interface UniversalNavbarProps {
   logoUrl?: string | null;
   navLinks: { label: string; href: string }[];
   onCtaClick?: () => void;
+  onNavigate?: (href: string) => void;
 }
 
 export const UniversalNavbar: React.FC<UniversalNavbarProps> = ({
@@ -16,12 +17,20 @@ export const UniversalNavbar: React.FC<UniversalNavbarProps> = ({
   logoUrl,
   navLinks,
   onCtaClick,
+  onNavigate,
 }) => {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const viewport = useViewport();
   const isSimulatedMobile = viewport === "mobile";
   const isSimulatedTablet = viewport === "tablet";
   const forceMobileNav = isSimulatedMobile || isSimulatedTablet;
+
+  const handleLinkClick = (e: React.MouseEvent, href: string) => {
+    if (onNavigate) {
+      e.preventDefault();
+      onNavigate(href);
+    }
+  };
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-theme bg-canvas/90 backdrop-blur-md transition-colors duration-200">
@@ -36,7 +45,7 @@ export const UniversalNavbar: React.FC<UniversalNavbarProps> = ({
             />
           ) : (
             <div className="flex h-8 w-8 sm:h-9 sm:w-9 items-center justify-center bg-theme-brand text-theme-brand-fg rounded-theme font-bold shadow-theme shrink-0">
-              <Sparkles className="h-4 w-4 sm:h-5 sm:w-5" />
+              <Sparkles className="h-4 w-4" />
             </div>
           )}
           <span className="text-sm sm:text-base font-bold tracking-tight text-theme-primary truncate">
@@ -51,7 +60,8 @@ export const UniversalNavbar: React.FC<UniversalNavbarProps> = ({
               <a
                 key={idx}
                 href={link.href}
-                className="text-sm font-medium text-theme-muted transition-colors hover:text-theme-primary"
+                onClick={(e) => handleLinkClick(e, link.href)}
+                className="text-sm font-medium text-theme-muted transition-colors hover:text-theme-primary cursor-pointer"
               >
                 {link.label}
               </a>
@@ -96,8 +106,11 @@ export const UniversalNavbar: React.FC<UniversalNavbarProps> = ({
               <a
                 key={idx}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2 text-sm font-medium text-theme-muted hover:text-theme-primary hover:bg-card-theme rounded-theme transition-colors"
+                onClick={(e) => {
+                  setMobileMenuOpen(false);
+                  handleLinkClick(e, link.href);
+                }}
+                className="px-3 py-2 text-sm font-medium text-theme-muted hover:text-theme-primary hover:bg-card-theme rounded-theme transition-colors cursor-pointer"
               >
                 {link.label}
               </a>

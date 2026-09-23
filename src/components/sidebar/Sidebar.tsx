@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { BuilderState, Page, Section, SectionType } from "@/types/builder";
+import { BuilderState, Page, Section, SectionType, AnimationStyle } from "@/types/builder";
 import { GlobalSettings } from "./GlobalSettings";
 import { PageManager } from "./PageManager";
 import { SectionManager } from "./SectionManager";
@@ -17,6 +17,7 @@ interface SidebarProps {
   activePageId: string;
   activeSectionId: string | null;
   onThemeChange: (theme: string) => void;
+  onAnimationStyleChange?: (style: AnimationStyle) => void;
   onBusinessNameChange: (name: string) => void;
   onLogoUrlChange: (url: string | null) => void;
   onNavLinksChange: (links: { label: string; href: string }[]) => void;
@@ -38,6 +39,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
   activePageId,
   activeSectionId,
   onThemeChange,
+  onAnimationStyleChange,
   onBusinessNameChange,
   onLogoUrlChange,
   onNavLinksChange,
@@ -122,12 +124,18 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <GlobalSettings
             theme={state.theme}
             onThemeChange={onThemeChange}
+            animationStyle={state.animationStyle || "slide-up"}
+            onAnimationStyleChange={onAnimationStyleChange}
             businessName={state.global.businessName}
             onBusinessNameChange={onBusinessNameChange}
             logoUrl={state.global.logoUrl}
             onLogoUrlChange={onLogoUrlChange}
             navLinks={state.global.navLinks}
             onNavLinksChange={onNavLinksChange}
+            pages={state.pages}
+            activePageId={activePageId}
+            onSelectPage={onSelectPage}
+            onAddPage={onAddPage}
             onToast={onToast}
           />
         )}
@@ -145,6 +153,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
             <div className="pt-4 border-t border-zinc-800">
               <SectionManager
+                activePage={activePage}
                 sections={activePage?.sections || []}
                 activeSectionId={activeSectionId}
                 onSelectSection={handleSelectSection}
