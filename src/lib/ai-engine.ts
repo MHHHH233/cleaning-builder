@@ -360,12 +360,29 @@ User Prompt / Instructions: ${req.userPrompt || "Generate compelling, modern cop
   }
 
   const json = await res.json();
-  const text = json.choices?.[0]?.message?.content || "";
+  const text = json.choices?.[0]?.message?.content || json.choices?.[0]?.message?.reasoning || "";
   
-  const cleanJson = text.replace(/```json/g, "").replace(/```/g, "").trim();
-  const parsed = JSON.parse(cleanJson);
-  if (Array.isArray(parsed) && parsed.length > 0) {
-    return parsed;
+  // Try direct parse after stripping markdown fences
+  try {
+    const cleanJson = text.replace(/```(?:json)?/gi, "").replace(/```/g, "").trim();
+    if (cleanJson) {
+      const parsed = JSON.parse(cleanJson);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    }
+  } catch {}
+
+  // Try extracting array via regex
+  const match = text.match(/\[\s*\{[\s\S]*\}\s*\]/);
+  if (match) {
+    try {
+      const parsed = JSON.parse(match[0]);
+      if (Array.isArray(parsed) && parsed.length > 0) {
+        return parsed;
+      }
+    } catch {}
   }
+
   throw new Error("Invalid format received from LLM");
 }

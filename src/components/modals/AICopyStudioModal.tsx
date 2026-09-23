@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import {
   Sparkles,
   Check,
@@ -54,6 +55,11 @@ export const AICopyStudioModal: React.FC<AICopyStudioModalProps> = ({
     model: "builtin",
   });
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (isOpen) {
@@ -96,12 +102,12 @@ export const AICopyStudioModal: React.FC<AICopyStudioModalProps> = ({
     fetchSuggestions(aiSettings);
   };
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted) return null;
 
   const currentOption = suggestions.find((s) => s.id === selectedId);
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 backdrop-blur-sm p-4">
       <div className="flex flex-col h-[85vh] w-full max-w-2xl rounded-xl border border-zinc-700 bg-zinc-900 shadow-2xl overflow-hidden animate-in fade-in zoom-in-95 duration-200">
         {/* Header */}
         <div className="flex items-center justify-between border-b border-zinc-800 px-5 py-4 bg-zinc-950">
@@ -402,6 +408,7 @@ export const AICopyStudioModal: React.FC<AICopyStudioModalProps> = ({
           </div>
         )}
       </div>
-    </div>
+    </div>,
+    document.body
   );
 };
